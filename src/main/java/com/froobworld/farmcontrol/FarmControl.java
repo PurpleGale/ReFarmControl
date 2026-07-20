@@ -20,6 +20,7 @@ public class FarmControl extends JavaPlugin {
     private ExclusionManager exclusionManager;
     private FarmController farmController;
     private MessageManager messageManager;
+    private SpawnLimiter spawnLimiter;
 
     public void onEnable() {
         this.fcConfig = new FcConfig(this);
@@ -51,6 +52,7 @@ public class FarmControl extends JavaPlugin {
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+        spawnLimiter = new SpawnLimiter(this);
         farmController = new FarmController(this);
         farmController.load();
         farmController.register();
@@ -67,6 +69,9 @@ public class FarmControl extends JavaPlugin {
         farmController.unRegister();
         profileManager.reload();
         messageManager.reload();
+        if (spawnLimiter != null) {
+            spawnLimiter.clearCache();
+        }
         farmController.reload();
         farmController.register();
 

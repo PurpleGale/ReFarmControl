@@ -27,7 +27,11 @@ public class RemoveAiAction extends Action {
         mob.setVelocity(new Vector(0, 0, 0));
         if (entity instanceof org.bukkit.entity.Villager villager) {
             try {
-                villager.setAI(true);
+                // In 1.21+, restoring AI requires a refresh of the brain schedule state.
+                // Toggling awareness forces this update, allowing Villagers to restock.
+                boolean wasAware = villager.isAware();
+                villager.setAware(!wasAware);
+                villager.setAware(wasAware);
             } catch (Throwable ignored) {}
         }
     }

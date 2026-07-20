@@ -148,6 +148,14 @@ world-settings:
           # Holding the food required to breed an animal will tempt it, so never undo this action on tempt.
           tempt: false
 
+    # These settings concern real-time spawn limits to prevent entities from spawning if there are already too many.
+    # Format for each entry: "entity_type;limit;distance;spawn_reasons..."
+    #  * 'distance' can be 'same-chunk' or a numerical block radius.
+    #  * 'spawn_reasons' is a comma-separated list of Bukkit SpawnReasons (e.g. egg, dispense_egg, spawner) to block.
+    #    Use '*' or leave blank/omit to check and block all spawn reasons.
+    spawn-limits:
+      - "category:animal;200;32"
+
 # These settings concern how we determine the server's MSPT.
 mspt-tracker-settings:
   # Over how many ticks should we collect tick durations for calculating the MSPT?

@@ -25,7 +25,11 @@ public class RemoveAwarenessAction extends Action {
         mob.setAware(true);
         if (entity instanceof org.bukkit.entity.Villager villager) {
             try {
-                villager.setAware(true);
+                // In 1.21+, restoring awareness requires a refresh of the brain/goal selectors.
+                // Toggling AI state forces this update, allowing Villagers to restock.
+                boolean hadAi = villager.hasAI();
+                villager.setAI(!hadAi);
+                villager.setAI(hadAi);
             } catch (Throwable ignored) {}
         }
     }

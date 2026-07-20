@@ -143,6 +143,9 @@ public class FcConfig extends NabConfiguration {
 
         }
 
+        @Entry(key = "spawn-limits")
+        public final ConfigEntry<List<String>> spawnLimits = ConfigEntries.stringListEntry();
+
     }
 
     @Section(key = "mspt-tracker-settings")
