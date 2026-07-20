@@ -21,6 +21,8 @@ public abstract class BaseMobGoalNmsHook implements MobGoalNmsHook {
     private final List<String> randomMovementClassNames; // NMS classes for random movement goals
     private final List<String> goalSelectorFieldNames = new ArrayList<>(); // mobs have two goal selectors (one for goals, one for targets)
     private final Set<Class<?>> randomMovementGoalClasses = new HashSet<>();
+    private String actualWrappedGoalsFieldName;
+    private String actualUnwrappedGoalFieldName;
     private boolean compatible = true;
 
     public BaseMobGoalNmsHook(String wrappedGoalsFieldName, String unwrappedGoalFieldName, String mobClassName, String goalSelectorClassName, String wrappedGoalClassName, String unwrappedGoalClassName, List<String> randomMovementClassNames) {
@@ -33,7 +35,6 @@ public abstract class BaseMobGoalNmsHook implements MobGoalNmsHook {
         this.randomMovementClassNames = randomMovementClassNames;
         initWrappedGoalsGetter();
         initGoalUnwrapper();
-        initWrappedGoalsGetter();
         initRandomMovementGoalClasses();
     }
 
@@ -49,12 +50,12 @@ public abstract class BaseMobGoalNmsHook implements MobGoalNmsHook {
 
     @Override
     public Set<Object> getWrappedGoals(Object goalSelector) {
-        return on(goalSelector).get(wrappedGoalsFieldName);
+        return on(goalSelector).get(actualWrappedGoalsFieldName);
     }
 
     @Override
     public Object unwrapGoal(Object wrappedGoal) {
-        return on(wrappedGoal).get(unwrappedGoalFieldName);
+        return on(wrappedGoal).get(actualUnwrappedGoalFieldName);
     }
 
     @Override
@@ -71,10 +72,14 @@ public abstract class BaseMobGoalNmsHook implements MobGoalNmsHook {
         try {
             Class<?> entityInsentientClass = Class.forName(mobClassName);
             Class<?> goalSelectorClass = Class.forName(goalSelectorClassName);
-            for (Field field : entityInsentientClass.getDeclaredFields()) {
-                if (field.getType().equals(goalSelectorClass)) {
-                    goalSelectorFieldNames.add(field.getName());
+            Class<?> currentEntityClass = entityInsentientClass;
+            while (currentEntityClass != null && goalSelectorFieldNames.isEmpty()) {
+                for (Field field : currentEntityClass.getDeclaredFields()) {
+                    if (field.getType().equals(goalSelectorClass)) {
+                        goalSelectorFieldNames.add(field.getName());
+                    }
                 }
+                currentEntityClass = currentEntityClass.getSuperclass();
             }
             if (goalSelectorFieldNames.isEmpty()) {
                 compatible = false; // found no goal selectors
@@ -83,12 +88,20 @@ public abstract class BaseMobGoalNmsHook implements MobGoalNmsHook {
             boolean foundField = false;
             for (Field field : goalSelectorClass.getDeclaredFields()) {
                 if (field.getName().equals(wrappedGoalsFieldName)) {
-                    if (!Set.class.isAssignableFrom(field.getType())) {
-                        compatible = false; // found the field, but it's the wrong type
+                    if (Set.class.isAssignableFrom(field.getType())) {
+                        actualWrappedGoalsFieldName = field.getName();
+                        foundField = true;
+                    }
+                    break;
+                }
+            }
+            if (!foundField) {
+                for (Field field : goalSelectorClass.getDeclaredFields()) {
+                    if (Set.class.isAssignableFrom(field.getType())) {
+                        actualWrappedGoalsFieldName = field.getName();
+                        foundField = true;
                         break;
                     }
-                    foundField = true;
-                    break;
                 }
             }
             if (!foundField) {
@@ -104,12 +117,20 @@ public abstract class BaseMobGoalNmsHook implements MobGoalNmsHook {
             boolean foundField = false;
             for (Field field : wrappedGoalClass.getDeclaredFields()) {
                 if (field.getName().equals(unwrappedGoalFieldName)) {
-                    if (!unwrappedGoalClass.isAssignableFrom(field.getType())) {
-                        compatible = false; // found the field, but it's the wrong type
+                    if (unwrappedGoalClass.isAssignableFrom(field.getType())) {
+                        actualUnwrappedGoalFieldName = field.getName();
+                        foundField = true;
+                    }
+                    break;
+                }
+            }
+            if (!foundField) {
+                for (Field field : wrappedGoalClass.getDeclaredFields()) {
+                    if (unwrappedGoalClass.isAssignableFrom(field.getType())) {
+                        actualUnwrappedGoalFieldName = field.getName();
+                        foundField = true;
                         break;
                     }
-                    foundField = true;
-                    break;
                 }
             }
             if (!foundField) {

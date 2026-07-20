@@ -49,10 +49,13 @@ public class PaperTickHook implements TickHook {
     public static boolean isCompatible() {
         try {
             Class.forName("com.destroystokyo.paper.event.server.ServerTickStartEvent");
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
-        return true;
+            return true;
+        } catch (ClassNotFoundException ignored) {}
+        try {
+            Class.forName("io.papermc.paper.event.server.ServerTickStartEvent");
+            return true;
+        } catch (ClassNotFoundException ignored) {}
+        return false;
     }
 
 }
