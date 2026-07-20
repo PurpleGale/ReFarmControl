@@ -23,5 +23,10 @@ public class RemoveAwarenessAction extends Action {
             return;
         }
         mob.setAware(true);
+        if (entity instanceof org.bukkit.entity.Villager villager) {
+            try {
+                villager.setAware(true);
+            } catch (Throwable ignored) {}
+        }
     }
 }

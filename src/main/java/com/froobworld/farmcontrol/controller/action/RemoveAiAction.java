@@ -25,5 +25,10 @@ public class RemoveAiAction extends Action {
         }
         mob.setAI(true);
         mob.setVelocity(new Vector(0, 0, 0));
+        if (entity instanceof org.bukkit.entity.Villager villager) {
+            try {
+                villager.setAI(true);
+            } catch (Throwable ignored) {}
+        }
     }
 }
