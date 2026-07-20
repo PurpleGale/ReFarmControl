@@ -20,6 +20,15 @@ public class RegionisedSchedulerHook implements SchedulerHook {
     public ScheduledTask runTaskAsap(Runnable runnable) {
         if (Bukkit.isGlobalTickThread()) {
             runnable.run();
+            return new ScheduledTask() {
+                @Override
+                public void cancel() {}
+
+                @Override
+                public boolean isCancelled() {
+                    return false;
+                }
+            };
         }
         return runTask(runnable);
     }

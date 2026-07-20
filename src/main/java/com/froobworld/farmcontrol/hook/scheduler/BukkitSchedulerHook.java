@@ -20,6 +20,15 @@ public class BukkitSchedulerHook implements SchedulerHook {
     public ScheduledTask runTaskAsap(Runnable runnable) {
         if (Bukkit.isPrimaryThread()) {
             runnable.run();
+            return new ScheduledTask() {
+                @Override
+                public void cancel() {}
+
+                @Override
+                public boolean isCancelled() {
+                    return false;
+                }
+            };
         }
         return runTask(runnable);
     }
