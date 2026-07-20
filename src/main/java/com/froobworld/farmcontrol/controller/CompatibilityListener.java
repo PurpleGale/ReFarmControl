@@ -29,7 +29,13 @@ public class CompatibilityListener implements Listener {
     @EventHandler
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Actioner.undoActions(event.getRightClicked(), action -> {
-            return farmControl.getFcConfig().worldSettings.of(event.getRightClicked().getWorld()).actionSettings.undoOn.of(action).interact.get();
+            boolean undo = farmControl.getFcConfig().worldSettings.of(event.getRightClicked().getWorld()).actionSettings.undoOn.of(action).interact.get();
+            if (!undo && event.getRightClicked() instanceof org.bukkit.entity.Villager) {
+                if ("remove-ai".equals(action.getName()) || "remove-awareness".equals(action.getName())) {
+                    undo = true;
+                }
+            }
+            return undo;
         }, farmControl);
     }
 
@@ -63,8 +69,20 @@ public class CompatibilityListener implements Listener {
 
     @EventHandler
     public void onChunkUnload(ChunkUnloadEvent event) {
-        for (Entity entity : event.getChunk().getEntities()) {
-            Actioner.undoActions(entity, Action::undoOnUnload, farmControl);
+        try {
+            if (event.getChunk() == null || !event.getChunk().isLoaded()) {
+                return;
+            }
+            for (Entity entity : event.getChunk().getEntities()) {
+                if (entity != null && entity.isValid()) {
+                    try {
+                        Actioner.undoActions(entity, Action::undoOnUnload, farmControl);
+                        com.froobworld.farmcontrol.data.FcData.removeCache(entity);
+                    } catch (Throwable ignored) {}
+                }
+            }
+        } catch (Exception ignored) {
+            // Suppress any exceptions during chunk unload to prevent server crashes / recursion in 1.21.4+
         }
     }
 

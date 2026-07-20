@@ -16,19 +16,23 @@ public final class Actioner {
     }
 
     public static void undoActions(Entity entity, Predicate<Action> actionUndoPredicate, FarmControl farmControl) {
-        FcData fcData = FcData.get(entity);
-        if (fcData == null) {
-            return;
-        }
-        for (Action action : farmControl.getActionManager().getActions()) {
-            if (actionUndoPredicate.test(action)) {
-                if (fcData.removeAction(action)) {
-                    action.undoAction(entity);
+        try {
+            FcData fcData = FcData.get(entity);
+            if (fcData == null) {
+                return;
+            }
+            for (Action action : farmControl.getActionManager().getActions()) {
+                if (actionUndoPredicate.test(action)) {
+                    if (fcData.removeAction(action)) {
+                        action.undoAction(entity);
+                    }
                 }
             }
+            fcData.save(entity);
+            FcData.removeIfEmpty(entity);
+        } catch (Exception ignored) {
+            // Gracefully handle PDC read/write failures if PDC is inaccessible (e.g., during chunk unload)
         }
-        fcData.save(entity);
-        FcData.removeIfEmpty(entity);
     }
 
 }

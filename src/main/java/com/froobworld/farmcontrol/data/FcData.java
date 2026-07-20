@@ -132,8 +132,12 @@ public class FcData {
 
     public void save(Entity entity) {
         if (dirty) {
-            entity.getPersistentDataContainer().set(KEY, TYPE, this);
-            dirty = false;
+            try {
+                entity.getPersistentDataContainer().set(KEY, TYPE, this);
+                dirty = false;
+            } catch (Exception e) {
+                // Ignore PDC write failures
+            }
         }
     }
 
@@ -145,9 +149,13 @@ public class FcData {
     public static FcData get(Entity entity) {
         FcData data = dataCache.get(entity);
         if (data == null) {
-            data = entity.getPersistentDataContainer().get(KEY, TYPE);
-            if (data != null) {
-                dataCache.put(entity, data);
+            try {
+                data = entity.getPersistentDataContainer().get(KEY, TYPE);
+                if (data != null) {
+                    dataCache.put(entity, data);
+                }
+            } catch (Exception e) {
+                // Ignore PDC read failures
             }
         }
         return data;
@@ -163,11 +171,19 @@ public class FcData {
     }
 
     public static void removeIfEmpty(Entity entity) {
-        FcData data = get(entity);
-        if (data != null && data.actionTriggerMap.isEmpty()) {
-            entity.getPersistentDataContainer().remove(KEY);
+        try {
+            FcData data = get(entity);
+            if (data != null && data.actionTriggerMap.isEmpty()) {
+                entity.getPersistentDataContainer().remove(KEY);
+                dataCache.remove(entity);
+            }
+        } catch (Exception e) {
             dataCache.remove(entity);
         }
+    }
+
+    public static void removeCache(Entity entity) {
+        dataCache.remove(entity);
     }
 
 }
