@@ -9,7 +9,7 @@ public class NmsUtils {
             .type()
             .getPackage()
             .getName();
-    private static final boolean PRE_1_17 = NMS_PACKAGE_NAME.contains("1");
+    private static final boolean PRE_1_17 = NMS_PACKAGE_NAME.matches(".*v1_(?:8|9|10|11|12|13|14|15|16)_.*");
 
     public static String getFullyQualifiedClassName(String className, String post1_17PackageName) {
         return (PRE_1_17 ? NMS_PACKAGE_NAME : ("net.minecraft." + post1_17PackageName)) + "." + className;
