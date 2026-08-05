@@ -1,0 +1,46 @@
+# Russian (RU) Translation for FarmControl
+prefix: "<gold>FarmControl <gray>» "
+
+general:
+  no_permission: "<red>У вас нет прав для использования этой команды."
+  player_only: "<red>Эту команду может выполнять только игрок."
+  unknown_world: "<red>Неизвестный мир '<world_name>'."
+  must_specify_world: "<red>Вы должны указать мир."
+
+command:
+  help:
+    header: "<gradient:gold:yellow><bold>FarmControl v<version></bold></gradient>"
+    github: "<gray>GitHub: <white><underlined>https://github.com/PurpleGale/ReFarmControl</underlined></gray>"
+    usage_reload: "<yellow>/<label> reload <gray>- Перезагрузить конфигурацию и языковые файлы"
+    usage_status: "<yellow>/<label> status [мир] <gray>- Просмотреть статус ограничений сущностей"
+    usage_history: "<yellow>/<label> history <gray>- Просмотреть историю ограничений"
+    usage_notify: "<yellow>/<label> notify <gray>- Включить/выключить уведомления циклов"
+
+  reload:
+    success: "<yellow>Плагин успешно перезагружен."
+    error: "<red>Произошла ошибка при перезагрузке плагина, подробности в консоли."
+
+  status:
+    header: "<gray>Статус для мира '<red><world></red>':"
+    total_entities: "<gold>Всего сущностей: <red><count>"
+    affected_entities: "<gold>Затронуто сущностей: <red><count>"
+    breakdown_header: "<gold>Детализация:"
+    breakdown_item: "<gold>- <gray><action>: <red><count>"
+
+  history:
+    no_history: "<red>Нет доступной истории."
+    header: "<gold>Последняя история:"
+    from_time: "<gray><time> назад:"
+    summary: "- Всего затронуто сущностей: <red><affected></red><removed_suffix>."
+    removed_suffix: ", удалено: <red><removed></red>"
+
+  notify:
+    enabled: "<yellow>FarmControl теперь будет уведомлять вас о выполняемых действиях."
+    disabled: "<yellow>FarmControl больше не будет уведомлять вас о выполняемых действиях."
+
+notification:
+  summary: "<gold>FarmControl - <red><affected></red> сущностей затронуто<removed_suffix>."
+  removed_suffix: ", включая <red><removed></red> удаленных"
+
+breeding:
+  disabled: "<red>Разведение животных отключено в этой зоне из-за ограничений фермы."

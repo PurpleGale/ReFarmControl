@@ -3,10 +3,9 @@ package com.froobworld.farmcontrol.command;
 import com.froobworld.farmcontrol.FarmControl;
 import com.froobworld.farmcontrol.controller.tracker.CycleStats;
 import com.froobworld.farmcontrol.utils.DurationDisplayer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -25,30 +24,32 @@ public class HistoryCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         List<CycleStats> cycleHistory = farmControl.getFarmController().getCycleHistoryManager().getCycleHistory();
         if (cycleHistory.isEmpty()) {
-            sender.sendMessage(ChatColor.RED + "There is no history to display.");
+            farmControl.getLanguageManager().sendMessage(sender, "command.history.no_history");
             return true;
         }
 
-        sender.sendMessage(ChatColor.GOLD + "Most recent history:");
+        farmControl.getLanguageManager().sendMessage(sender, "command.history.header");
         for (CycleStats cycleStats : cycleHistory) {
             sender.sendMessage("");
             long timeSinceCycle = System.currentTimeMillis() - cycleStats.getStartTimeMillis();
-            sender.sendMessage(ChatColor.GRAY + "From " + ChatColor.RED + DurationDisplayer.getDurationInMinutesAndSeconds(timeSinceCycle) + ChatColor.GRAY + " ago:");
-            ComponentBuilder builder = new ComponentBuilder("- ").color(net.md_5.bungee.api.ChatColor.GOLD);
-            builder.append("Total of ").color(net.md_5.bungee.api.ChatColor.GRAY)
-                    .append(cycleStats.getAffectedEntityCount() + "").color(net.md_5.bungee.api.ChatColor.RED)
-                    .append(" entities affected").color(net.md_5.bungee.api.ChatColor.GRAY);
-            if (cycleStats.getEntitiesRemoved() > 0) {
-                builder.append(", with ").color(net.md_5.bungee.api.ChatColor.GRAY)
-                        .append(cycleStats.getEntitiesRemoved() + "").color(net.md_5.bungee.api.ChatColor.RED)
-                        .append(" removed.").color(net.md_5.bungee.api.ChatColor.GRAY);
-            } else {
-                builder.append(".").color(net.md_5.bungee.api.ChatColor.GRAY);
-            }
-            BaseComponent[] breakdown = cycleStats.getBreakdown();
-            builder.getParts().forEach(part -> part.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, breakdown)));
+            String durationStr = DurationDisplayer.getDurationInMinutesAndSeconds(timeSinceCycle);
+            farmControl.getLanguageManager().sendMessage(sender, "command.history.from_time", Placeholder.parsed("time", durationStr));
 
-            sender.spigot().sendMessage(builder.create());
+            Component removedSuffix = farmControl.getLanguageManager().getConditionalSuffix(
+                sender,
+                "command.history.removed_suffix",
+                cycleStats.getEntitiesRemoved(),
+                "removed"
+            );
+
+            Component line = farmControl.getLanguageManager().getComponent(
+                sender,
+                "command.history.summary",
+                Placeholder.parsed("affected", String.valueOf(cycleStats.getAffectedEntityCount())),
+                Placeholder.component("removed_suffix", removedSuffix)
+            ).hoverEvent(HoverEvent.showText(cycleStats.getBreakdownComponent()));
+
+            sender.sendMessage(line);
         }
 
         return true;

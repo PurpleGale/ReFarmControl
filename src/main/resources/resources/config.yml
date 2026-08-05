@@ -7,6 +7,9 @@ version: 9
 # Every how many ticks should we run the profile check / action cycle?
 cycle-period: 600
 
+# Default language to use for messages if player locale is unavailable (e.g. en_us, ru_ru, zh_cn)
+language: "en_us"
+
 # How long in ticks should we wait before starting the checking tasks following the plugin's start up?
 #  * This is useful when using the 'reactive' mode where it is desirable to ignore the server's performance in the first
 #    few minutes following a restart.

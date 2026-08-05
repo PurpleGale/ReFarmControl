@@ -1,14 +1,13 @@
 package com.froobworld.farmcontrol.command;
 
 import com.froobworld.farmcontrol.FarmControl;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FarmControlCommand implements CommandExecutor {
-    public static final String NO_PERMISSION_MESSAGE = ChatColor.RED + "You don't have permission to use this command.";
     private final FarmControl farmControl;
 
     private final ReloadCommand reloadCommand;
@@ -42,31 +40,31 @@ public class FarmControlCommand implements CommandExecutor {
             if (sender.hasPermission("farmcontrol.command.reload")) {
                 return reloadCommand.onCommand(sender, command, s, args);
             } else {
-                sender.sendMessage(NO_PERMISSION_MESSAGE);
+                farmControl.getLanguageManager().sendMessage(sender, "general.no_permission");
                 return true;
             }
         }
-        if ((args[0].equalsIgnoreCase("status") || args[0].equalsIgnoreCase("stats"))) {
+        if (args[0].equalsIgnoreCase("status") || args[0].equalsIgnoreCase("stats")) {
             if (sender.hasPermission("farmcontrol.command.status")) {
                 return statusCommand.onCommand(sender, command, s, args);
             } else {
-                sender.sendMessage(NO_PERMISSION_MESSAGE);
+                farmControl.getLanguageManager().sendMessage(sender, "general.no_permission");
                 return true;
             }
         }
-        if ((args[0].equalsIgnoreCase("history"))) {
+        if (args[0].equalsIgnoreCase("history")) {
             if (sender.hasPermission("farmcontrol.command.history")) {
                 return historyCommand.onCommand(sender, command, s, args);
             } else {
-                sender.sendMessage(NO_PERMISSION_MESSAGE);
+                farmControl.getLanguageManager().sendMessage(sender, "general.no_permission");
                 return true;
             }
         }
-        if ((args[0].equalsIgnoreCase("notify"))) {
+        if (args[0].equalsIgnoreCase("notify")) {
             if (sender.hasPermission("farmcontrol.command.notify")) {
                 return notifyCommand.onCommand(sender, command, s, args);
             } else {
-                sender.sendMessage(NO_PERMISSION_MESSAGE);
+                farmControl.getLanguageManager().sendMessage(sender, "general.no_permission");
                 return true;
             }
         }
@@ -75,20 +73,20 @@ public class FarmControlCommand implements CommandExecutor {
     }
 
     private void sendHelp(CommandSender sender, String cl) {
-        sender.sendMessage(ChatColor.YELLOW + "FarmControl v" + farmControl.getDescription().getVersion());
-        sender.sendMessage(ChatColor.YELLOW + "GitHub: " + ChatColor.WHITE + "https://github.com/froobynooby/FarmControl/");
+        farmControl.getLanguageManager().sendMessage(sender, "command.help.header", Placeholder.parsed("version", farmControl.getDescription().getVersion()));
+        farmControl.getLanguageManager().sendMessage(sender, "command.help.github");
         sender.sendMessage("");
         if (sender.hasPermission("farmcontrol.command.reload")) {
-            sender.sendMessage("/" + cl + " reload");
+            farmControl.getLanguageManager().sendMessage(sender, "command.help.usage_reload", Placeholder.parsed("label", cl));
         }
         if (sender.hasPermission("farmcontrol.command.status")) {
-            sender.sendMessage("/" + cl + " status " + (sender instanceof Player ? "[world]" :"<world>"));
+            farmControl.getLanguageManager().sendMessage(sender, "command.help.usage_status", Placeholder.parsed("label", cl));
         }
         if (sender.hasPermission("farmcontrol.command.history")) {
-            sender.sendMessage("/" + cl + " history ");
+            farmControl.getLanguageManager().sendMessage(sender, "command.help.usage_history", Placeholder.parsed("label", cl));
         }
         if (sender.hasPermission("farmcontrol.command.notify")) {
-            sender.sendMessage("/" + cl + " notify ");
+            farmControl.getLanguageManager().sendMessage(sender, "command.help.usage_notify", Placeholder.parsed("label", cl));
         }
     }
 

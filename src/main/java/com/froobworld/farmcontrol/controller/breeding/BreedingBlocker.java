@@ -44,7 +44,7 @@ public class BreedingBlocker implements Listener {
     private void sendFailureMessage(Player player, Entity entity) {
         // Don't spam failure messages for attempting to breed the same animal in quick succession
         if (System.currentTimeMillis() - lastMessage.computeIfAbsent(player, k -> new HashMap<>()).computeIfAbsent(entity.getUniqueId(), k -> 0L) > MESSAGE_RATE_LIMIT) {
-            farmControl.getMessageManager().sendMessage(player, "breeding-disabled");
+            farmControl.getLanguageManager().sendMessage(player, "breeding.disabled");
             lastMessage.get(player).put(entity.getUniqueId(), System.currentTimeMillis());
         }
     }

@@ -1,0 +1,46 @@
+# English (US) Translation for FarmControl
+prefix: "<gold>FarmControl <gray>» "
+
+general:
+  no_permission: "<red>You don't have permission to use this command."
+  player_only: "<red>This command can only be executed by a player."
+  unknown_world: "<red>Unknown world '<world_name>'."
+  must_specify_world: "<red>You must specify a world."
+
+command:
+  help:
+    header: "<gradient:gold:yellow><bold>FarmControl v<version></bold></gradient>"
+    github: "<gray>GitHub: <white><underlined>https://github.com/PurpleGale/ReFarmControl</underlined></gray>"
+    usage_reload: "<yellow>/<label> reload <gray>- Reload configuration and language files"
+    usage_status: "<yellow>/<label> status [world] <gray>- View entity restriction status"
+    usage_history: "<yellow>/<label> history <gray>- View restriction history"
+    usage_notify: "<yellow>/<label> notify <gray>- Toggle cycle notifications"
+
+  reload:
+    success: "<yellow>Plugin reloaded."
+    error: "<red>Encountered an error reloading the plugin, see console for details."
+
+  status:
+    header: "<gray>Status for world '<red><world></red>':"
+    total_entities: "<gold>Total entities: <red><count>"
+    affected_entities: "<gold>Total affected entities: <red><count>"
+    breakdown_header: "<gold>Breakdown:"
+    breakdown_item: "<gold>- <gray><action>: <red><count>"
+
+  history:
+    no_history: "<red>There is no history to display."
+    header: "<gold>Most recent history:"
+    from_time: "<gray>From <red><time></red> ago:"
+    summary: "- Total of <red><affected></red> entities affected<removed_suffix>."
+    removed_suffix: ", with <red><removed></red> removed"
+
+  notify:
+    enabled: "<yellow>FarmControl will now notify you of actions it performs."
+    disabled: "<yellow>FarmControl will no longer notify you of actions it performs."
+
+notification:
+  summary: "<gold>FarmControl - <red><affected></red> entities affected<removed_suffix>."
+  removed_suffix: ", including <red><removed></red> removed"
+
+breeding:
+  disabled: "<red>Breeding has been disabled in this area due to farm limits."

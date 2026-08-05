@@ -1,10 +1,9 @@
 package com.froobworld.farmcontrol.controller.tracker;
 
 import com.froobworld.farmcontrol.FarmControl;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,33 +30,37 @@ public class NotificationCentre {
     }
 
     public void notify(CycleStats cycleStats) {
-        ComponentBuilder notificationBuilder = new ComponentBuilder()
-                .append("FarmControl - ").color(ChatColor.GOLD)
-                .append("" + cycleStats.getAffectedEntityCount()).color(ChatColor.RED)
-                .append(" entities affected").color(ChatColor.GRAY);
-        if (cycleStats.getEntitiesRemoved() > 0) {
-            notificationBuilder
-                    .append(", including ").color(ChatColor.GRAY)
-                    .append("" + cycleStats.getEntitiesRemoved()).color(ChatColor.RED)
-                    .append(" removed.").color(ChatColor.GRAY);
-        } else {
-            notificationBuilder.append(".").color(ChatColor.GRAY);
-        }
-        BaseComponent[] breakdown = cycleStats.getBreakdown();
-        notificationBuilder.getParts().forEach(part -> part.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, breakdown)));
-        BaseComponent[] message = notificationBuilder.create();
+        Component breakdownComponent = cycleStats.getBreakdownComponent();
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!player.hasPermission("farmcontrol.command.notify")) {
                 continue;
             }
             if (notifiableUsers.contains(player.getUniqueId())) {
-                player.spigot().sendMessage(message);
+                sendNotification(player, cycleStats, breakdownComponent);
             }
         }
         if (notifiableUsers.contains(CONSOLE_UUID)) {
-            Bukkit.getConsoleSender().spigot().sendMessage(message);
+            sendNotification(Bukkit.getConsoleSender(), cycleStats, breakdownComponent);
         }
+    }
+
+    private void sendNotification(CommandSender sender, CycleStats cycleStats, Component breakdown) {
+        Component removedSuffix = farmControl.getLanguageManager().getConditionalSuffix(
+            sender,
+            "notification.removed_suffix",
+            cycleStats.getEntitiesRemoved(),
+            "removed"
+        );
+
+        Component message = farmControl.getLanguageManager().getComponent(
+            sender,
+            "notification.summary",
+            Placeholder.parsed("affected", String.valueOf(cycleStats.getAffectedEntityCount())),
+            Placeholder.component("removed_suffix", removedSuffix)
+        ).hoverEvent(HoverEvent.showText(breakdown));
+
+        sender.sendMessage(message);
     }
 
     public void setNotifiable(CommandSender sender, boolean notifiable) {

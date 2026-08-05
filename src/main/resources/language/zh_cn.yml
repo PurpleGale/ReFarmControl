@@ -1,0 +1,46 @@
+# Simplified Chinese (ZH_CN) Translation for FarmControl
+prefix: "<gold>FarmControl <gray>» "
+
+general:
+  no_permission: "<red>你没有权限使用此命令。"
+  player_only: "<red>此命令只能由玩家执行。"
+  unknown_world: "<red>未知世界 '<world_name>'。"
+  must_specify_world: "<red>你必须指定一个世界。"
+
+command:
+  help:
+    header: "<gradient:gold:yellow><bold>FarmControl v<version></bold></gradient>"
+    github: "<gray>GitHub: <white><underlined>https://github.com/PurpleGale/ReFarmControl</underlined></gray>"
+    usage_reload: "<yellow>/<label> reload <gray>- 重载配置文件和语言文件"
+    usage_status: "<yellow>/<label> status [世界] <gray>- 查看指定世界的实体限制状态"
+    usage_history: "<yellow>/<label> history <gray>- 查看实体限制历史记录"
+    usage_notify: "<yellow>/<label> notify <gray>- 切换周期通知开关"
+
+  reload:
+    success: "<yellow>插件已成功重载。"
+    error: "<red>重载插件时遇到错误，请查看控制台获取详细信息。"
+
+  status:
+    header: "<gray>世界 '<red><world></red>' 的状态："
+    total_entities: "<gold>实体总数: <red><count>"
+    affected_entities: "<gold>受限实体总数: <red><count>"
+    breakdown_header: "<gold>详细分类:"
+    breakdown_item: "<gold>- <gray><action>: <red><count>"
+
+  history:
+    no_history: "<red>没有可显示的历史记录。"
+    header: "<gold>最近的历史记录:"
+    from_time: "<gray><time> 前:"
+    summary: "- 共影响 <red><affected></red> 个实体<removed_suffix>。"
+    removed_suffix: "，其中清理了 <red><removed></red> 个"
+
+  notify:
+    enabled: "<yellow>FarmControl 现在会在执行操作时通知你。"
+    disabled: "<yellow>FarmControl 将不再通知你执行的操作。"
+
+notification:
+  summary: "<gold>FarmControl - 共影响 <red><affected></red> 个实体<removed_suffix>。"
+  removed_suffix: "，包含 <red><removed></red> 个已清理"
+
+breeding:
+  disabled: "<red>由于农场限制，该区域已禁用繁殖。"

@@ -1,10 +1,11 @@
 package com.froobworld.farmcontrol;
 
 import com.froobworld.farmcontrol.command.FarmControlCommand;
+import com.froobworld.farmcontrol.command.FarmControlCommandRegistrar;
 import com.froobworld.farmcontrol.config.FcConfig;
 import com.froobworld.farmcontrol.controller.*;
 import com.froobworld.farmcontrol.controller.action.RemoveRandomMovementAction;
-import com.froobworld.farmcontrol.message.MessageManager;
+import com.froobworld.farmcontrol.i18n.LanguageManager;
 import com.froobworld.farmcontrol.metrics.FcMetrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -13,13 +14,13 @@ import java.io.IOException;
 
 public class FarmControl extends JavaPlugin {
     private FcConfig fcConfig;
+    private LanguageManager languageManager;
     private HookManager hookManager;
     private ActionManager actionManager;
     private TriggerManager triggerManager;
     private ProfileManager profileManager;
     private ExclusionManager exclusionManager;
     private FarmController farmController;
-    private MessageManager messageManager;
     private SpawnLimiter spawnLimiter;
 
     public void onEnable() {
@@ -29,6 +30,9 @@ public class FarmControl extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.languageManager = new LanguageManager(this);
+        this.languageManager.load();
+
         hookManager = new HookManager(this);
         hookManager.load();
         actionManager = new ActionManager();
@@ -44,20 +48,12 @@ public class FarmControl extends JavaPlugin {
             return;
         }
         exclusionManager = new ExclusionManager(this);
-        messageManager = new MessageManager(this);
-        try {
-            messageManager.reload();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getPluginManager().disablePlugin(this);
-            return;
-        }
         spawnLimiter = new SpawnLimiter(this);
         farmController = new FarmController(this);
         farmController.load();
         farmController.register();
 
-        registerCommands();
+        FarmControlCommandRegistrar.register(this);
 
         new FcMetrics(this, 9692);
         hookManager.getSchedulerHook().runRepeatingTask(() -> RemoveRandomMovementAction.cleanUp(this), 1200, 1200);
@@ -65,16 +61,15 @@ public class FarmControl extends JavaPlugin {
 
     public void reload() throws Exception {
         fcConfig.load();
+        languageManager.load();
         hookManager.reload();
         farmController.unRegister();
         profileManager.reload();
-        messageManager.reload();
         if (spawnLimiter != null) {
             spawnLimiter.clearCache();
         }
         farmController.reload();
         farmController.register();
-
     }
 
     public void onDisable() {
@@ -87,6 +82,10 @@ public class FarmControl extends JavaPlugin {
 
     public FcConfig getFcConfig() {
         return fcConfig;
+    }
+
+    public LanguageManager getLanguageManager() {
+        return languageManager;
     }
 
     public ActionManager getActionManager() {
@@ -113,15 +112,12 @@ public class FarmControl extends JavaPlugin {
         return hookManager;
     }
 
-    public MessageManager getMessageManager() {
-        return messageManager;
-    }
-
     public void registerCommands() {
         FarmControlCommand farmControlCommand = new FarmControlCommand(this);
-        getCommand("farmcontrol").setExecutor(farmControlCommand);
-        getCommand("farmcontrol").setTabCompleter(farmControlCommand.getTabCompleter());
-        getCommand("farmcontrol").setPermission("farmcontrol.command.farmcontrol");
-        getCommand("farmcontrol").setPermissionMessage(FarmControlCommand.NO_PERMISSION_MESSAGE);
+        if (getCommand("farmcontrol") != null) {
+            getCommand("farmcontrol").setExecutor(farmControlCommand);
+            getCommand("farmcontrol").setTabCompleter(farmControlCommand.getTabCompleter());
+            getCommand("farmcontrol").setPermission("farmcontrol.command.farmcontrol");
+        }
     }
 }

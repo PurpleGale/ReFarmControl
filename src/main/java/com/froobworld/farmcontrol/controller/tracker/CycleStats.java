@@ -2,14 +2,11 @@ package com.froobworld.farmcontrol.controller.tracker;
 
 import com.froobworld.farmcontrol.controller.action.Action;
 import com.froobworld.farmcontrol.controller.entity.SnapshotEntity;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.EntityType;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class CycleStats {
@@ -43,8 +40,8 @@ public class CycleStats {
         return entitiesRemoved;
     }
 
-    public BaseComponent[] getBreakdown() {
-        List<BaseComponent> components = new ArrayList<>();
+    public Component getBreakdownComponent() {
+        Component result = Component.empty();
         boolean firstAction = true;
 
         for (Action action : actionCounts.keySet()) {
@@ -53,18 +50,14 @@ public class CycleStats {
                     .sum();
             String entityBreakdown = actionCounts.get(action).entrySet().stream()
                     .sorted(Map.Entry.<EntityType, Integer>comparingByValue().reversed())
-                    .map(entry -> ChatColor.RED + "" + entry.getValue() + " " + ChatColor.GRAY + entry.getKey().name().toLowerCase())
+                    .map(entry -> "<red>" + entry.getValue() + "</red> <gray>" + entry.getKey().name().toLowerCase() + "</gray>")
                     .collect(Collectors.joining(", "));
-            BaseComponent[] baseComponents = new ComponentBuilder()
-                    .append(firstAction ? "" : "\n\n")
-                    .append("- " + action.getName() + ": ").color(ChatColor.GOLD)
-                    .append(totalCount + "\n").color(ChatColor.RED)
-                    .append(TextComponent.fromLegacyText(entityBreakdown))
-                    .create();
-            components.addAll(Arrays.asList(baseComponents));
+            
+            String line = (firstAction ? "" : "\n\n") + "<gold>- " + action.getName() + ": </gold><red>" + totalCount + "</red>\n" + entityBreakdown;
+            result = result.append(MiniMessage.miniMessage().deserialize(line));
             firstAction = false;
         }
-        return components.toArray(new BaseComponent[0]);
+        return result;
     }
 
     public static class Builder {
