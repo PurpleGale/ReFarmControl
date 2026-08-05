@@ -1,29 +1,38 @@
-name: Build FarmControl
+name: Build ReFarmControl
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up FarmControl JDK
-        uses: actions/setup-java@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: 'adopt'
+          java-version: '21'
+          distribution: 'temurin'
 
-      - name: Check out FarmControl
-        uses: actions/checkout@v2
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
 
-      - name: Validate Gradle Wrapper
-        uses: gradle/wrapper-validation-action@v1
+      - name: Make gradlew executable
+        run: chmod +x gradlew
 
-      - name: Build FarmControl
-        run: ./gradlew build
+      - name: Build with Gradle
+        run: ./gradlew build --no-daemon
 
-      - name: Archive FarmControl
+      - name: Upload JAR Artifact
         uses: actions/upload-artifact@v4
         with:
+          name: ReFarmControl
           path: build/libs/*.jar
-          name: FarmControl
+
