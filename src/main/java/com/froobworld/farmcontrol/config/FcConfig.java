@@ -30,7 +30,7 @@ public class FcConfig extends NabConfiguration {
     public final ConfigEntry<Long> cyclePeriod = ConfigEntries.longEntry();
 
     @Entry(key = "language")
-    public final ConfigEntry<String> language = ConfigEntries.stringEntry();
+    public final ConfigEntry<String> language = new ConfigEntry<>(o -> o == null ? null : o.toString());
 
     @Entry(key = "start-up-delay")
     public final ConfigEntry<Long> startUpDelay = ConfigEntries.longEntry();
