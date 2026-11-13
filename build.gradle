@@ -1,5 +1,5 @@
 plugins {
-    id 'com.gradleup.shadow' version '8.3.0'
+    id 'com.gradleup.shadow' version '9.4.1'
     id 'java'
 }
 
@@ -8,7 +8,7 @@ version '1.4.0'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
@@ -44,7 +44,7 @@ repositories {
 
 dependencies {
     testImplementation 'junit:junit:4.13.2'
-    compileOnly 'dev.folia:folia-api:1.21.11-R0.1-SNAPSHOT'
+    compileOnly 'dev.folia:folia-api:26.3.build.6-alpha'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     implementation 'org.jooq:joor-java-8:0.9.14'
     implementation 'com.github.froobynooby:nab-configuration:master-SNAPSHOT'
